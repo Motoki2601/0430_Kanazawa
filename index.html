@@ -346,6 +346,91 @@
     .res-label { font-size: 12px; color: var(--accent); font-weight: 500; }
     .res-value { font-size: 14px; font-weight: 600; color: var(--label); text-align: right; }
 
+
+
+    /* ─── 追加フォーム / 編集UI ─── */
+    .stack { display: flex; flex-direction: column; gap: 10px; }
+    .inline-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 14px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+    }
+    .inline-form-3 {
+      display: grid;
+      grid-template-columns: 86px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 14px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+    }
+    .input {
+      border: 1px solid var(--sep);
+      background: var(--card);
+      border-radius: 10px;
+      padding: 10px 11px;
+      font-size: 14px;
+      color: var(--label);
+      width: 100%;
+      font: inherit;
+    }
+    .input::placeholder { color: var(--label4); }
+    .input:focus {
+      outline: none;
+      border-color: rgba(212,168,83,0.55);
+      box-shadow: 0 0 0 2px rgba(212,168,83,0.12);
+    }
+    .btn {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn:active { opacity: 0.7; }
+    .btn-ghost {
+      border: none;
+      background: transparent;
+      color: var(--label3);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 8px;
+    }
+    .btn-ghost:active { background: rgba(60,60,67,0.08); }
+    .inline-help {
+      font-size: 12px;
+      color: var(--label4);
+      line-height: 1.5;
+      padding: 0 2px;
+    }
+    .tl-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 420px) {
+      .inline-form-3 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .inline-form-3 .btn {
+        grid-column: 1 / -1;
+      }
+      .inline-form-3 #itinerary-detail {
+        grid-column: 1 / -1 !important;
+      }
+    }
+
     /* ─── ボトムタブバー ─── */
     .tabbar {
       position: fixed;
@@ -517,6 +602,22 @@
           </div>
         </div>
       </div>
+    </div>
+
+
+
+    <div class="section-title">旅程を調整（追加・編集）</div>
+    <div class="card" style="padding: 16px;">
+      <div class="stack">
+        <form class="inline-form-3" id="itinerary-form">
+          <input class="input" type="text" id="itinerary-time" placeholder="時間 例 16:20" maxlength="10" required>
+          <input class="input" type="text" id="itinerary-title" placeholder="予定名を入力" maxlength="60" required>
+          <button class="btn" type="submit">追加</button>
+          <input class="input" style="grid-column: 1 / -1;" type="text" id="itinerary-detail" placeholder="詳細（任意）" maxlength="120">
+        </form>
+        <div class="inline-help">追加した予定はこのセクション内で編集・削除できます（ブラウザ保存）。</div>
+      </div>
+      <div id="custom-itinerary-list" class="timeline" style="margin-top: 10px;"></div>
     </div>
 
   </div>
@@ -776,6 +877,14 @@
 <div class="tab-content" id="tab-todo">
   <div class="page">
     <div class="section-title">やること</div>
+    <div class="card" style="padding: 14px; margin-bottom: 10px;">
+      <form class="inline-form" id="todo-form">
+        <input class="input" type="text" id="todo-input" placeholder="TODOを追加（例：お土産候補を決める）" maxlength="80" required>
+        <button class="btn" type="submit">追加</button>
+      </form>
+      <div class="inline-help" style="margin-top: 10px;">既存TODOはそのまま、追加分は下に表示されます。保存できない環境ではこの画面内のみ保持されます。</div>
+    </div>
+
     <div class="card checklist">
       <div class="check-item" onclick="toggle(this)" data-id="todo-0">
         <div class="check-circle"><div class="check-circle-inner"></div></div>
@@ -798,6 +907,9 @@
         <div class="check-text">持ち物を準備する</div>
       </div>
     </div>
+
+    <div class="section-title">追加したTODO</div>
+    <div class="card checklist" id="custom-todo-list"></div>
     <div class="caption">チェックはブラウザに保存されます</div>
   </div>
 </div>
@@ -885,6 +997,29 @@
 </nav>
 
 <script>
+  const STORAGE_KEYS = {
+    customTodos: 'custom-todos-v1',
+    customItinerary: 'custom-itinerary-v1'
+  };
+
+  const storage = {
+    get(key) {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    },
+    set(key, value) {
+      try {
+        window.localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+  };
+
   function showTab(id, btn) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -896,12 +1031,218 @@
   function toggle(el) {
     el.classList.toggle('checked');
     const id = el.dataset.id;
-    localStorage.setItem(id, el.classList.contains('checked') ? '1' : '');
+    storage.set(id, el.classList.contains('checked') ? '1' : '');
   }
 
-  document.querySelectorAll('[data-id]').forEach(el => {
-    if (localStorage.getItem(el.dataset.id) === '1') el.classList.add('checked');
+  let customTodos = [];
+  let customItinerary = [];
+
+  function uid(prefix) {
+    return prefix + '-' + Date.now() + '-' + Math.random().toString(16).slice(2, 8);
+  }
+
+  function renderCustomTodos() {
+    const list = document.getElementById('custom-todo-list');
+    list.innerHTML = '';
+    if (!customTodos.length) {
+      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ追加されていません</div></div></div>';
+      return;
+    }
+
+    customTodos.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'check-item' + (item.checked ? ' checked' : '');
+      row.dataset.id = item.id;
+      row.innerHTML = `
+        <div class="check-circle"><div class="check-circle-inner"></div></div>
+        <div class="check-text"></div>
+        <button class="btn-ghost" type="button" data-action="edit">編集</button>
+        <button class="btn-ghost" type="button" data-action="delete">削除</button>
+      `;
+      row.querySelector('.check-text').textContent = item.text;
+      row.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        if (action === 'edit') {
+          e.stopPropagation();
+          editTodo(item.id);
+          return;
+        }
+        if (action === 'delete') {
+          e.stopPropagation();
+          deleteTodo(item.id);
+          return;
+        }
+        toggleCustomTodo(item.id);
+      });
+      list.appendChild(row);
+    });
+  }
+
+  function toggleCustomTodo(id) {
+    customTodos = customTodos.map(item => item.id === id ? { ...item, checked: !item.checked } : item);
+    saveCustomTodos();
+    renderCustomTodos();
+  }
+
+  function editTodo(id) {
+    const todo = customTodos.find(item => item.id === id);
+    if (!todo) return;
+    const next = window.prompt('TODOを編集', todo.text);
+    if (next === null) return;
+    const trimmed = next.trim();
+    if (!trimmed) return;
+    customTodos = customTodos.map(item => item.id === id ? { ...item, text: trimmed } : item);
+    saveCustomTodos();
+    renderCustomTodos();
+  }
+
+  function deleteTodo(id) {
+    customTodos = customTodos.filter(item => item.id !== id);
+    saveCustomTodos();
+    renderCustomTodos();
+  }
+
+  function saveCustomTodos() {
+    storage.set(STORAGE_KEYS.customTodos, JSON.stringify(customTodos));
+  }
+
+  function renderCustomItinerary() {
+    const list = document.getElementById('custom-itinerary-list');
+    list.innerHTML = '';
+    if (!customItinerary.length) {
+      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ追加されていません</div></div></div>';
+      return;
+    }
+
+    customItinerary.forEach(item => {
+      const node = document.createElement('div');
+      node.className = 'tl-item';
+      node.innerHTML = `
+        <div class="tl-left"><div class="tl-time"></div></div>
+        <div class="tl-body">
+          <div class="tl-title"></div>
+          <div class="tl-detail"></div>
+          <div class="tl-actions">
+            <button class="btn-ghost" type="button" data-action="edit">編集</button>
+            <button class="btn-ghost" type="button" data-action="delete">削除</button>
+          </div>
+        </div>
+      `;
+      node.querySelector('.tl-time').textContent = item.time;
+      node.querySelector('.tl-title').textContent = item.title;
+      const detailEl = node.querySelector('.tl-detail');
+      if (item.detail) {
+        detailEl.textContent = item.detail;
+      } else {
+        detailEl.style.display = 'none';
+      }
+      node.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        if (action === 'edit') {
+          editItinerary(item.id);
+        }
+        if (action === 'delete') {
+          deleteItinerary(item.id);
+        }
+      });
+      list.appendChild(node);
+    });
+  }
+
+  function saveCustomItinerary() {
+    storage.set(STORAGE_KEYS.customItinerary, JSON.stringify(customItinerary));
+  }
+
+  function editItinerary(id) {
+    const item = customItinerary.find(v => v.id === id);
+    if (!item) return;
+    const time = window.prompt('時間（例 16:20）', item.time);
+    if (time === null) return;
+    const title = window.prompt('予定名', item.title);
+    if (title === null) return;
+    const detail = window.prompt('詳細（空欄可）', item.detail || '');
+    if (detail === null) return;
+
+    const nextTime = time.trim();
+    const nextTitle = title.trim();
+    if (!nextTime || !nextTitle) return;
+
+    customItinerary = customItinerary.map(v => v.id === id ? {
+      ...v,
+      time: nextTime,
+      title: nextTitle,
+      detail: detail.trim()
+    } : v);
+    saveCustomItinerary();
+    renderCustomItinerary();
+  }
+
+  function deleteItinerary(id) {
+    customItinerary = customItinerary.filter(v => v.id !== id);
+    saveCustomItinerary();
+    renderCustomItinerary();
+  }
+
+  function loadState() {
+    document.querySelectorAll('[data-id]').forEach(el => {
+      if (storage.get(el.dataset.id) === '1') el.classList.add('checked');
+    });
+
+        const rawTodos = storage.get(STORAGE_KEYS.customTodos);
+    const rawItinerary = storage.get(STORAGE_KEYS.customItinerary);
+
+    try {
+      customTodos = JSON.parse(rawTodos || '[]');
+    } catch (e) {
+      customTodos = [];
+    }
+
+    try {
+      customItinerary = JSON.parse(rawItinerary || '[]');
+    } catch (e) {
+      customItinerary = [];
+    }
+
+    renderCustomTodos();
+    renderCustomItinerary();
+  }
+
+  document.getElementById('todo-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('todo-input');
+    const text = input.value.trim();
+    if (!text) return;
+    customTodos.unshift({ id: uid('todo-custom'), text, checked: false });
+    input.value = '';
+    saveCustomTodos();
+    renderCustomTodos();
   });
+
+  document.getElementById('itinerary-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const time = document.getElementById('itinerary-time');
+    const title = document.getElementById('itinerary-title');
+    const detail = document.getElementById('itinerary-detail');
+
+    const t = time.value.trim();
+    const ti = title.value.trim();
+    if (!t || !ti) return;
+
+    customItinerary.push({
+      id: uid('itinerary-custom'),
+      time: t,
+      title: ti,
+      detail: detail.value.trim()
+    });
+
+    time.value = '';
+    title.value = '';
+    detail.value = '';
+    saveCustomItinerary();
+    renderCustomItinerary();
+  });
+
+  loadState();
 </script>
 </body>
 </html>
