@@ -1,0 +1,956 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>金沢旅のしおり 2026.04.30</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --primary: #2D6A4F;
+      --primary-light: #52B788;
+      --accent: #D4A017;
+      --bg: #F8F5F0;
+      --card: #FFFFFF;
+      --text: #2C2C2C;
+      --text-sub: #6B6B6B;
+      --border: #E0DAD0;
+      --warn: #E07A5F;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Hiragino Sans', 'Noto Sans JP', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    /* ヘッダー */
+    .header {
+      background: linear-gradient(135deg, var(--primary) 0%, #1B4332 100%);
+      color: white;
+      padding: 28px 20px 20px;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .header::before {
+      content: '';
+      position: absolute;
+      top: -30px; right: -30px;
+      width: 120px; height: 120px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.06);
+    }
+    .header::after {
+      content: '';
+      position: absolute;
+      bottom: -20px; left: -20px;
+      width: 80px; height: 80px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.04);
+    }
+    .header-date {
+      font-size: 13px;
+      opacity: 0.75;
+      letter-spacing: 2px;
+      margin-bottom: 6px;
+    }
+    .header-title {
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .header-sub {
+      font-size: 13px;
+      opacity: 0.7;
+    }
+
+    /* タブナビ */
+    .nav {
+      display: flex;
+      overflow-x: auto;
+      background: var(--card);
+      border-bottom: 1px solid var(--border);
+      scrollbar-width: none;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    }
+    .nav::-webkit-scrollbar { display: none; }
+    .nav-btn {
+      flex: none;
+      padding: 14px 16px;
+      border: none;
+      background: none;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-sub);
+      cursor: pointer;
+      white-space: nowrap;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+    }
+    .nav-btn.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* コンテンツ */
+    .content { display: none; padding: 16px; max-width: 560px; margin: 0 auto; }
+    .content.active { display: block; }
+
+    /* カード */
+    .card {
+      background: var(--card);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    }
+    .card-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      color: var(--text-sub);
+      margin-bottom: 12px;
+    }
+
+    /* タイムライン */
+    .timeline { position: relative; }
+    .timeline-item {
+      display: flex;
+      gap: 14px;
+      padding-bottom: 20px;
+      position: relative;
+    }
+    .timeline-item:last-child { padding-bottom: 0; }
+    .timeline-left {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: none;
+      width: 60px;
+    }
+    .timeline-time {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      white-space: nowrap;
+    }
+    .timeline-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary-light);
+      border: 2px solid var(--primary);
+      margin-top: 4px;
+      flex: none;
+    }
+    .timeline-line {
+      width: 2px;
+      flex: 1;
+      background: var(--border);
+      margin-top: 4px;
+    }
+    .timeline-item:last-child .timeline-line { display: none; }
+    .timeline-body { flex: 1; padding-top: 0; }
+    .timeline-label {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 4px;
+      line-height: 1.4;
+    }
+    .timeline-detail {
+      font-size: 13px;
+      color: var(--text-sub);
+      line-height: 1.6;
+    }
+
+    /* 交通情報 */
+    .transport-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .transport-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .transport-row:first-child { padding-top: 0; }
+    .transport-icon {
+      font-size: 22px;
+      flex: none;
+      width: 32px;
+      text-align: center;
+    }
+    .transport-info { flex: 1; }
+    .transport-route {
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 2px;
+    }
+    .transport-time {
+      font-size: 13px;
+      color: var(--text-sub);
+    }
+    .transport-badge {
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+      white-space: nowrap;
+    }
+    .badge-green { background: #D8F3DC; color: var(--primary); }
+    .badge-blue { background: #DBEAFE; color: #1D4ED8; }
+    .badge-gold { background: #FEF3C7; color: #92400E; }
+
+    /* 予約情報 */
+    .reservation-box {
+      background: linear-gradient(135deg, #EEF9F3, #D8F3DC);
+      border: 1px solid #B7E4C7;
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 10px;
+    }
+    .reservation-box .label {
+      font-size: 10px;
+      color: var(--primary);
+      font-weight: 700;
+      letter-spacing: 1px;
+      margin-bottom: 4px;
+    }
+    .reservation-box .value {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+    .reservation-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    /* 警告バナー */
+    .warn-box {
+      background: #FFF5F0;
+      border: 1px solid #FECACA;
+      border-left: 4px solid var(--warn);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 13px;
+      color: #7F1D1D;
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+    .warn-box strong { color: var(--warn); }
+
+    /* スポット情報 */
+    .spot-card {
+      background: #FAFAF8;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-top: 8px;
+    }
+    .spot-name {
+      font-size: 15px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .spot-meta {
+      font-size: 12px;
+      color: var(--text-sub);
+      line-height: 1.8;
+    }
+    .spot-meta span { display: flex; align-items: flex-start; gap: 4px; }
+    .maybe-badge {
+      font-size: 10px;
+      background: #FEF3C7;
+      color: #92400E;
+      padding: 1px 6px;
+      border-radius: 10px;
+      font-weight: 600;
+    }
+
+    /* チェックリスト */
+    .checklist { list-style: none; }
+    .checklist li {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+      transition: opacity 0.2s;
+    }
+    .checklist li:last-child { border-bottom: none; }
+    .checklist li.checked { opacity: 0.45; }
+    .checklist li.checked .check-label { text-decoration: line-through; }
+    .check-box {
+      width: 22px; height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--border);
+      flex: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      transition: all 0.2s;
+      background: white;
+    }
+    .checklist li.checked .check-box {
+      background: var(--primary);
+      border-color: var(--primary);
+    }
+    .check-label { font-size: 14px; line-height: 1.4; }
+
+    /* セクション見出し */
+    .section-head {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      margin: 20px 0 10px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .section-head:first-child { margin-top: 0; }
+
+    /* TODO */
+    .todo-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 12px 0;
+      border-bottom: 1px solid var(--border);
+      cursor: pointer;
+      user-select: none;
+    }
+    .todo-item:last-child { border-bottom: none; }
+    .todo-item.checked .todo-text { text-decoration: line-through; opacity: 0.4; }
+    .todo-text { font-size: 14px; line-height: 1.5; flex: 1; }
+
+    /* 概要カード */
+    .overview-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+    .overview-item {
+      background: var(--card);
+      border-radius: 12px;
+      padding: 14px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+      text-align: center;
+    }
+    .overview-item .ov-icon { font-size: 24px; margin-bottom: 6px; }
+    .overview-item .ov-label { font-size: 11px; color: var(--text-sub); margin-bottom: 2px; }
+    .overview-item .ov-val { font-size: 14px; font-weight: 700; }
+
+    /* フッター */
+    .footer {
+      text-align: center;
+      padding: 24px;
+      font-size: 12px;
+      color: var(--text-sub);
+    }
+
+    /* アニメーション */
+    .content.active {
+      animation: fadeIn 0.2s ease;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-date">2026.04.30 THU</div>
+  <div class="header-title">🏯 金沢 旅のしおり</div>
+  <div class="header-sub">日帰り旅行 · 北陸新幹線</div>
+</div>
+
+<nav class="nav">
+  <button class="nav-btn active" onclick="showTab('overview')">🗓 概要</button>
+  <button class="nav-btn" onclick="showTab('go')">🚅 行き</button>
+  <button class="nav-btn" onclick="showTab('morning')">🌅 午前</button>
+  <button class="nav-btn" onclick="showTab('afternoon')">🌆 午後</button>
+  <button class="nav-btn" onclick="showTab('return')">🚅 帰り</button>
+  <button class="nav-btn" onclick="showTab('todo')">✅ TODO</button>
+  <button class="nav-btn" onclick="showTab('packing')">🧳 持ち物</button>
+</nav>
+
+<!-- 概要 -->
+<div class="content active" id="tab-overview">
+  <div class="overview-grid">
+    <div class="overview-item">
+      <div class="ov-icon">🏠</div>
+      <div class="ov-label">自宅出発</div>
+      <div class="ov-val">6:10</div>
+    </div>
+    <div class="overview-item">
+      <div class="ov-icon">🚉</div>
+      <div class="ov-label">金沢着</div>
+      <div class="ov-val">9:44</div>
+    </div>
+    <div class="overview-item">
+      <div class="ov-icon">🚅</div>
+      <div class="ov-label">金沢発（帰り）</div>
+      <div class="ov-val">21:03</div>
+    </div>
+    <div class="overview-item">
+      <div class="ov-icon">🏠</div>
+      <div class="ov-label">東京着</div>
+      <div class="ov-val">23:32</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📍 当日タイムライン</div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">6:10</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🏠 自宅出発</div>
+          <div class="timeline-detail">徒歩10分 → 矢口渡駅</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">7:20</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🚅 東京駅 発</div>
+          <div class="timeline-detail">かがやき503号 乗車</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">9:44</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🎉 金沢駅 着</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">10:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🎨 金沢21世紀美術館</div>
+          <div class="timeline-detail">交流ゾーン無料 / 展覧会ゾーン有料</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">11:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🍽️ いたる 記帳・待機</div>
+          <div class="timeline-detail">のど黒めし本舗いたる 前で順番待ち</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">12:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🐟 ランチ</div>
+          <div class="timeline-detail">のど黒めし（ひつまぶしスタイル）</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">13:30</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🏮 ひがし茶屋街 散策</div>
+          <div class="timeline-detail">石畳・格子造り・工芸品ショッピング</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">15:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🍨 デザート</div>
+          <div class="timeline-detail">金箔ソフト・加賀棒茶スイーツなど</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">15:30</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🐠 近江町市場</div>
+          <div class="timeline-detail">海鮮・地酒・お土産 ⚠️ 17時閉店</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">17:30</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🛍️ 金沢駅「あんと」</div>
+          <div class="timeline-detail">お土産最終確認</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">19:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🍢 夕食（軽め）</div>
+          <div class="timeline-detail">金沢おでん（駅周辺）</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">21:03</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🚅 金沢駅 発（帰り）</div>
+          <div class="timeline-detail">かがやき518号 → 東京 23:32着</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 行き -->
+<div class="content" id="tab-go">
+  <div class="card">
+    <div class="card-title">🚅 行きルート</div>
+    <div class="transport-row">
+      <div class="transport-icon">🚶</div>
+      <div class="transport-info">
+        <div class="transport-route">自宅 → 矢口渡駅</div>
+        <div class="transport-time">6:10 出発 ・徒歩 約10分</div>
+      </div>
+    </div>
+    <div class="transport-row">
+      <div class="transport-icon">🚃</div>
+      <div class="transport-info">
+        <div class="transport-route">矢口渡 → 蒲田</div>
+        <div class="transport-time">6:20 発 → 6:23 着 ・東急多摩川線（蒲田行）</div>
+      </div>
+      <span class="transport-badge badge-green">約3分</span>
+    </div>
+    <div class="transport-row">
+      <div class="transport-icon">🚃</div>
+      <div class="transport-info">
+        <div class="transport-route">蒲田 → 東京</div>
+        <div class="transport-time">6:26 発 → 6:53 着 ・JR京浜東北線</div>
+      </div>
+      <span class="transport-badge badge-blue">約27分</span>
+    </div>
+    <div class="transport-row">
+      <div class="transport-icon">🚅</div>
+      <div class="transport-info">
+        <div class="transport-route">東京 → 金沢</div>
+        <div class="transport-time">07:20 発 → 09:44 着 ・かがやき503号</div>
+      </div>
+      <span class="transport-badge badge-gold">約2h24m</span>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎫 新幹線 予約情報</div>
+    <div class="reservation-box">
+      <div class="label">列車</div>
+      <div class="value">かがやき503号（北陸新幹線）</div>
+    </div>
+    <div class="reservation-grid">
+      <div class="reservation-box">
+        <div class="label">座席</div>
+        <div class="value">3号車 4番A席</div>
+      </div>
+      <div class="reservation-box">
+        <div class="label">予約番号</div>
+        <div class="value">E67476</div>
+      </div>
+    </div>
+    <div class="reservation-box" style="margin-top:10px;">
+      <div class="label">チケット</div>
+      <div class="value">えきねっと・新幹線eチケット</div>
+    </div>
+    <div class="warn-box" style="margin-top:10px;">
+      ⚠️ 東京駅での乗り換えは新幹線なので余裕を持って！<br>
+      スマホでeチケットが表示できるか事前に確認を。
+    </div>
+  </div>
+</div>
+
+<!-- 午前 -->
+<div class="content" id="tab-morning">
+  <div class="card">
+    <div class="card-title">🌅 午前スケジュール</div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">10:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🎨 金沢21世紀美術館 入場</div>
+          <div class="timeline-detail">展覧会ゾーン：有料 / 交流ゾーン：無料</div>
+          <div class="warn-box">
+            ⚠️ <strong>スイミング・プール地下部</strong>は当日 AM 9:00 からWeb順番待ち予約が必要
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">11:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🚶 美術館 → いたる 移動</div>
+          <div class="timeline-detail">徒歩 約10分</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">11:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">📋 いたる前で記帳・待機</div>
+          <div class="timeline-detail">11:00頃から順番待ち記帳開始</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">12:00</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🍽️ ランチ</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🐟 ランチ情報</div>
+    <div class="spot-card">
+      <div class="spot-name">
+        のど黒めし本舗いたる
+        <span class="maybe-badge">変更の可能性あり</span>
+      </div>
+      <div class="spot-meta">
+        <span>📍 金沢市香林坊</span>
+        <span>📞 076-233-1147</span>
+        <span>💰 約 2,800円〜</span>
+        <span>🍽️ のど黒めし（ひつまぶしスタイル）が名物</span>
+      </div>
+    </div>
+    <div class="warn-box" style="margin-top:10px;">
+      ⚠️ 事前に電話で空き状況を確認・予約すること
+    </div>
+  </div>
+</div>
+
+<!-- 午後 -->
+<div class="content" id="tab-afternoon">
+  <div class="card">
+    <div class="card-title">🌆 午後スケジュール</div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">13:30</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🏮 ひがし茶屋街 散策</div>
+          <div class="timeline-detail">いたるから徒歩 約15分<br>石畳と格子造りの江戸の町並み<br>工芸品・雑貨のショッピング</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">15:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🍨 デザート</div>
+          <div class="spot-card" style="margin-top:8px;">
+            <div class="spot-name">ひがし茶屋街周辺のカフェ <span class="maybe-badge">変更の可能性あり</span></div>
+            <div class="spot-meta">
+              <span>✨ 金箔ソフト・加賀棒茶スイーツなど</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">15:30</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🐠 近江町市場</div>
+          <div class="timeline-detail">ひがし茶屋街から徒歩 約15分<br>海鮮刺身・地酒・お土産を購入</div>
+          <div class="warn-box">
+            ⚠️ 物販店は <strong>17時閉店</strong>が多い。早めに入ること！
+          </div>
+          <div class="spot-card" style="margin-top:8px;">
+            <div class="spot-name">海鮮 <span class="maybe-badge">変更の可能性あり</span></div>
+            <div class="spot-meta"><span>🐟 市場内の刺身・寿司店</span></div>
+          </div>
+          <div class="spot-card" style="margin-top:6px;">
+            <div class="spot-name">地酒お土産 <span class="maybe-badge">変更の可能性あり</span></div>
+            <div class="spot-meta"><span>🍶 市場内 または 金沢駅「あんと」</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">17:30</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🛍️ 金沢駅「あんと」 お土産最終確認</div>
+          <div class="timeline-detail">近江町市場からバス 約5分</div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">19:00</div>
+          <div class="timeline-dot"></div>
+          <div class="timeline-line"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🍢 夕食（軽め）</div>
+          <div class="spot-card" style="margin-top:8px;">
+            <div class="spot-name">金沢おでんの店 <span class="maybe-badge">変更の可能性あり</span></div>
+            <div class="spot-meta"><span>📍 駅周辺で食べてから新幹線へ</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-left">
+          <div class="timeline-time">20:30</div>
+          <div class="timeline-dot"></div>
+        </div>
+        <div class="timeline-body">
+          <div class="timeline-label">🚅 金沢駅へ</div>
+          <div class="timeline-detail">21:03発 かがやき518号に乗車</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 帰り -->
+<div class="content" id="tab-return">
+  <div class="card">
+    <div class="card-title">🚅 帰りルート</div>
+    <div class="transport-row">
+      <div class="transport-icon">🚅</div>
+      <div class="transport-info">
+        <div class="transport-route">金沢 → 東京</div>
+        <div class="transport-time">21:03 発 → 23:32 着 ・かがやき518号（終電）</div>
+      </div>
+      <span class="transport-badge badge-gold">要予約</span>
+    </div>
+    <div class="transport-row">
+      <div class="transport-icon">🚃</div>
+      <div class="transport-info">
+        <div class="transport-route">東京 → 蒲田</div>
+        <div class="transport-time">JR京浜東北線</div>
+      </div>
+    </div>
+    <div class="transport-row">
+      <div class="transport-icon">🚃</div>
+      <div class="transport-info">
+        <div class="transport-route">蒲田 → 矢口渡</div>
+        <div class="transport-time">東急多摩川線</div>
+      </div>
+    </div>
+    <div class="transport-row">
+      <div class="transport-icon">🚶</div>
+      <div class="transport-info">
+        <div class="transport-route">矢口渡 → 自宅</div>
+        <div class="transport-time">徒歩 約10分</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🎫 新幹線 予約情報</div>
+    <div class="reservation-box">
+      <div class="label">列車</div>
+      <div class="value">かがやき518号（北陸新幹線）終電</div>
+    </div>
+    <div class="reservation-box" style="margin-top:10px;">
+      <div class="label">予約状況</div>
+      <div class="value" style="color: var(--warn);">⚠️ 要予約（TODO参照）</div>
+    </div>
+    <div class="warn-box" style="margin-top:10px;">
+      ⚠️ これは終電です。乗り遅れると帰れません！<br>
+      20:30には金沢駅に到着していること。
+    </div>
+  </div>
+</div>
+
+<!-- TODO -->
+<div class="content" id="tab-todo">
+  <div class="card">
+    <div class="card-title">✅ やることリスト</div>
+    <ul class="checklist" id="todo-list">
+      <li onclick="toggle(this)" data-id="todo-0">
+        <div class="check-box">✓</div>
+        <span class="check-label">帰りの新幹線を予約する（かがやき518号 金沢21:03発）</span>
+      </li>
+      <li onclick="toggle(this)" data-id="todo-1">
+        <div class="check-box">✓</div>
+        <span class="check-label">のど黒めし本舗いたるに電話して空き確認・予約（☎ 076-233-1147）</span>
+      </li>
+      <li onclick="toggle(this)" data-id="todo-2">
+        <div class="check-box">✓</div>
+        <span class="check-label">午前・午後の観光プランを確定する</span>
+      </li>
+      <li onclick="toggle(this)" data-id="todo-3">
+        <div class="check-box">✓</div>
+        <span class="check-label">当日のバス・移動ルートを確認する</span>
+      </li>
+      <li onclick="toggle(this)" data-id="todo-4">
+        <div class="check-box">✓</div>
+        <span class="check-label">持ち物を準備する</span>
+      </li>
+    </ul>
+  </div>
+  <div style="text-align:center; font-size:12px; color:var(--text-sub); margin-top:4px;">
+    チェックした内容はブラウザに保存されます
+  </div>
+</div>
+
+<!-- 持ち物 -->
+<div class="content" id="tab-packing">
+  <div class="card">
+    <div class="card-title">🔴 必須アイテム</div>
+    <ul class="checklist">
+      <li onclick="toggle(this)" data-id="pack-0">
+        <div class="check-box">✓</div>
+        <span class="check-label">財布・現金</span>
+      </li>
+      <li onclick="toggle(this)" data-id="pack-1">
+        <div class="check-box">✓</div>
+        <span class="check-label">スマホ・充電器</span>
+      </li>
+      <li onclick="toggle(this)" data-id="pack-2">
+        <div class="check-box">✓</div>
+        <span class="check-label">イヤホン</span>
+      </li>
+      <li onclick="toggle(this)" data-id="pack-3">
+        <div class="check-box">✓</div>
+        <span class="check-label">本</span>
+      </li>
+      <li onclick="toggle(this)" data-id="pack-4">
+        <div class="check-box">✓</div>
+        <span class="check-label">えきねっとのチケット（スマホで表示できるか事前チェック）</span>
+      </li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <div class="card-title">🟡 あると便利</div>
+    <ul class="checklist">
+      <li onclick="toggle(this)" data-id="pack-5">
+        <div class="check-box">✓</div>
+        <span class="check-label">モバイルバッテリー</span>
+      </li>
+      <li onclick="toggle(this)" data-id="pack-6">
+        <div class="check-box">✓</div>
+        <span class="check-label">エコバッグ（お土産用）</span>
+      </li>
+      <li onclick="toggle(this)" data-id="pack-7">
+        <div class="check-box">✓</div>
+        <span class="check-label">折りたたみ傘（天気予報を要確認）</span>
+      </li>
+      <li onclick="toggle(this)" data-id="pack-8">
+        <div class="check-box">✓</div>
+        <span class="check-label">薬（酔い止め・頭痛薬など）</span>
+      </li>
+    </ul>
+  </div>
+  <div style="text-align:center; font-size:12px; color:var(--text-sub); margin-top:4px;">
+    チェックした内容はブラウザに保存されます
+  </div>
+</div>
+
+<div class="footer">🏯 よい旅を！</div>
+
+<script>
+  function showTab(id) {
+    document.querySelectorAll('.content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+
+  function toggle(el) {
+    el.classList.toggle('checked');
+    const id = el.dataset.id;
+    if (el.classList.contains('checked')) {
+      localStorage.setItem(id, '1');
+    } else {
+      localStorage.removeItem(id);
+    }
+  }
+
+  // 保存済みのチェック状態を復元
+  document.querySelectorAll('[data-id]').forEach(el => {
+    if (localStorage.getItem(el.dataset.id)) {
+      el.classList.add('checked');
+    }
+  });
+</script>
+</body>
+</html>
