@@ -367,6 +367,15 @@
       background: var(--bg);
       border-radius: var(--radius-sm);
     }
+    .inline-form-4 {
+      display: grid;
+      grid-template-columns: 86px 1fr 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 14px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+    }
     .input {
       border: 1px solid var(--sep);
       background: var(--card);
@@ -423,10 +432,20 @@
       .inline-form-3 {
         grid-template-columns: 1fr 1fr;
       }
+      .inline-form-4 {
+        grid-template-columns: 1fr 1fr;
+      }
       .inline-form-3 .btn {
         grid-column: 1 / -1;
       }
+      .inline-form-4 .btn {
+        grid-column: 1 / -1;
+      }
       .inline-form-3 #itinerary-detail {
+        grid-column: 1 / -1 !important;
+      }
+      .inline-form-4 #go-route-detail,
+      .inline-form-4 #return-route-detail {
         grid-column: 1 / -1 !important;
       }
     }
@@ -624,13 +643,14 @@
 
     <div class="section-title">ルート調整（行き）</div>
     <div class="card" style="padding: 14px; margin-bottom: 10px;">
-      <form class="inline-form-3" id="go-route-form">
+      <form class="inline-form-4" id="go-route-form">
         <input class="input" type="text" id="go-route-time" placeholder="時間" maxlength="20" required>
-        <input class="input" type="text" id="go-route-title" placeholder="経路名（例：最寄り→東京）" maxlength="70" required>
+        <input class="input" type="text" id="go-route-from" placeholder="出発地" maxlength="35" required>
+        <input class="input" type="text" id="go-route-to" placeholder="目的地" maxlength="35" required>
         <button class="btn" type="submit">追加</button>
         <input class="input" style="grid-column: 1 / -1;" type="text" id="go-route-detail" placeholder="詳細（任意）" maxlength="120">
       </form>
-      <div class="inline-help" style="margin-top: 10px;">行きのルートを追加・編集できます。</div>
+      <div class="inline-help" style="margin-top: 10px;">行きのルートを追加・編集できます（時間・出発地・目的地）。</div>
     </div>
     <div class="card" id="custom-go-route-list"></div>
 
@@ -805,13 +825,14 @@
 
     <div class="section-title">ルート調整（帰り）</div>
     <div class="card" style="padding: 14px; margin-bottom: 10px;">
-      <form class="inline-form-3" id="return-route-form">
+      <form class="inline-form-4" id="return-route-form">
         <input class="input" type="text" id="return-route-time" placeholder="時間" maxlength="20" required>
-        <input class="input" type="text" id="return-route-title" placeholder="経路名（例：東京→最寄り）" maxlength="70" required>
+        <input class="input" type="text" id="return-route-from" placeholder="出発地" maxlength="35" required>
+        <input class="input" type="text" id="return-route-to" placeholder="目的地" maxlength="35" required>
         <button class="btn" type="submit">追加</button>
         <input class="input" style="grid-column: 1 / -1;" type="text" id="return-route-detail" placeholder="詳細（任意）" maxlength="120">
       </form>
-      <div class="inline-help" style="margin-top: 10px;">帰りのルートを追加・編集できます。</div>
+      <div class="inline-help" style="margin-top: 10px;">帰りのルートを追加・編集できます（時間・出発地・目的地）。</div>
     </div>
     <div class="card" id="custom-return-route-list"></div>
 
@@ -972,16 +993,16 @@
     baseReturnRoute: 'base-return-route-v1'
   };
   const DEFAULT_GO_ROUTE = [
-    { id: 'go-base-0', icon: '🚶', time: '6:10発', title: '自宅 → 矢口渡駅', detail: '徒歩 約10分' },
-    { id: 'go-base-1', icon: '🚃', time: '6:20 → 6:23', title: '矢口渡 → 蒲田', detail: '東急多摩川線（蒲田行）' },
-    { id: 'go-base-2', icon: '🚃', time: '6:26 → 6:53', title: '蒲田 → 東京', detail: 'JR京浜東北線' },
-    { id: 'go-base-3', icon: '🚅', time: '7:20 → 9:44', title: '東京 → 金沢', detail: 'かがやき503号（北陸新幹線）' }
+    { id: 'go-base-0', icon: '🚶', time: '6:10発', from: '自宅', to: '矢口渡駅', detail: '徒歩 約10分' },
+    { id: 'go-base-1', icon: '🚃', time: '6:20 → 6:23', from: '矢口渡', to: '蒲田', detail: '東急多摩川線（蒲田行）' },
+    { id: 'go-base-2', icon: '🚃', time: '6:26 → 6:53', from: '蒲田', to: '東京', detail: 'JR京浜東北線' },
+    { id: 'go-base-3', icon: '🚅', time: '7:20 → 9:44', from: '東京', to: '金沢', detail: 'かがやき503号（北陸新幹線）' }
   ];
   const DEFAULT_RETURN_ROUTE = [
-    { id: 'return-base-0', icon: '🚅', time: '21:03 → 23:32', title: '金沢 → 東京', detail: 'かがやき518号（北陸新幹線）終電' },
-    { id: 'return-base-1', icon: '🚃', time: '', title: '東京 → 蒲田', detail: 'JR京浜東北線' },
-    { id: 'return-base-2', icon: '🚃', time: '', title: '蒲田 → 矢口渡', detail: '東急多摩川線' },
-    { id: 'return-base-3', icon: '🚶', time: '', title: '矢口渡 → 自宅', detail: '徒歩 約10分' }
+    { id: 'return-base-0', icon: '🚅', time: '21:03 → 23:32', from: '金沢', to: '東京', detail: 'かがやき518号（北陸新幹線）終電' },
+    { id: 'return-base-1', icon: '🚃', time: '', from: '東京', to: '蒲田', detail: 'JR京浜東北線' },
+    { id: 'return-base-2', icon: '🚃', time: '', from: '蒲田', to: '矢口渡', detail: '東急多摩川線' },
+    { id: 'return-base-3', icon: '🚶', time: '', from: '矢口渡', to: '自宅', detail: '徒歩 約10分' }
   ];
 
   const storage = {
@@ -1026,6 +1047,29 @@
 
   function uid(prefix) {
     return prefix + '-' + Date.now() + '-' + Math.random().toString(16).slice(2, 8);
+  }
+
+  function splitRouteTitle(title) {
+    const parts = (title || '').split('→').map(v => v.trim()).filter(Boolean);
+    if (parts.length >= 2) return { from: parts[0], to: parts.slice(1).join(' → ') };
+    return { from: title || '', to: '' };
+  }
+
+  function normalizeRouteItem(item) {
+    if (item.from && item.to) return item;
+    const parsed = splitRouteTitle(item.title);
+    return {
+      ...item,
+      from: item.from || parsed.from,
+      to: item.to || parsed.to
+    };
+  }
+
+  function routeLabel(item) {
+    const from = (item.from || '').trim();
+    const to = (item.to || '').trim();
+    if (from && to) return from + ' → ' + to;
+    return item.title || from || to || '';
   }
 
   function renderCustomTodos() {
@@ -1127,7 +1171,7 @@
         </div>
       `;
       node.querySelector('.tl-time').textContent = item.time;
-      node.querySelector('.tl-title').textContent = item.title;
+      node.querySelector('.tl-title').textContent = routeLabel(item);
       const detailEl = node.querySelector('.tl-detail');
       const parts = [];
       if (item.detail) parts.push(item.detail);
@@ -1259,7 +1303,7 @@
         <button class="btn-ghost" type="button" data-action="edit">編集</button>
         <button class="btn-ghost" type="button" data-action="delete">削除</button>
       `;
-      row.querySelector('.row-title').textContent = item.title;
+      row.querySelector('.row-title').textContent = routeLabel(item);
       row.querySelector('.row-right').textContent = item.time;
       const sub = row.querySelector('.row-sub');
       if (item.detail) {
@@ -1284,16 +1328,20 @@
   }
 
   function promptRouteEdit(target, labels) {
+    const normalized = normalizeRouteItem(target);
     const time = window.prompt(labels.time, target.time || '');
     if (time === null) return null;
-    const title = window.prompt(labels.title, target.title);
-    if (title === null) return null;
+    const from = window.prompt(labels.from, normalized.from || '');
+    if (from === null) return null;
+    const to = window.prompt(labels.to, normalized.to || '');
+    if (to === null) return null;
     const detail = window.prompt(labels.detail, target.detail || '');
     if (detail === null) return null;
     const nextTime = time.trim();
-    const nextTitle = title.trim();
-    if (!nextTitle) return null;
-    return { time: nextTime, title: nextTitle, detail: detail.trim() };
+    const nextFrom = from.trim();
+    const nextTo = to.trim();
+    if (!nextFrom || !nextTo) return null;
+    return { time: nextTime, from: nextFrom, to: nextTo, detail: detail.trim() };
   }
 
   function renderBaseRoute(listId, items, editFn, resetFn) {
@@ -1313,7 +1361,7 @@
         <button class="btn-ghost" type="button" data-action="reset">戻す</button>
       `;
       row.querySelector('.row-icon').textContent = item.icon || '🧭';
-      row.querySelector('.row-title').textContent = item.title;
+      row.querySelector('.row-title').textContent = routeLabel(item);
       row.querySelector('.row-right').textContent = item.time || '';
       const sub = row.querySelector('.row-sub');
       if (item.detail) {
@@ -1358,7 +1406,7 @@
   function editGoRoute(id) {
     const target = customGoRoute.find(item => item.id === id);
     if (!target) return;
-    const next = promptRouteEdit(target, { time: '時間', title: '経路名', detail: '詳細（空欄可）' });
+    const next = promptRouteEdit(target, { time: '時間', from: '出発地', to: '目的地', detail: '詳細（空欄可）' });
     if (!next) return;
     customGoRoute = customGoRoute.map(item => item.id === id ? { ...item, ...next } : item);
     saveCustomGoRoute();
@@ -1368,7 +1416,7 @@
   function editReturnRoute(id) {
     const target = customReturnRoute.find(item => item.id === id);
     if (!target) return;
-    const next = promptRouteEdit(target, { time: '時間', title: '経路名', detail: '詳細（空欄可）' });
+    const next = promptRouteEdit(target, { time: '時間', from: '出発地', to: '目的地', detail: '詳細（空欄可）' });
     if (!next) return;
     customReturnRoute = customReturnRoute.map(item => item.id === id ? { ...item, ...next } : item);
     saveCustomReturnRoute();
@@ -1408,7 +1456,7 @@
   function editBaseGoRoute(id) {
     const target = baseGoRoute.find(item => item.id === id);
     if (!target) return;
-    const next = promptRouteEdit(target, { time: '時間（空欄可）', title: '経路名', detail: '詳細（空欄可）' });
+    const next = promptRouteEdit(target, { time: '時間（空欄可）', from: '出発地', to: '目的地', detail: '詳細（空欄可）' });
     if (!next) return;
     baseGoRoute = baseGoRoute.map(item => item.id === id ? { ...item, ...next } : item);
     saveBaseGoRoute();
@@ -1418,7 +1466,7 @@
   function editBaseReturnRoute(id) {
     const target = baseReturnRoute.find(item => item.id === id);
     if (!target) return;
-    const next = promptRouteEdit(target, { time: '時間（空欄可）', title: '経路名', detail: '詳細（空欄可）' });
+    const next = promptRouteEdit(target, { time: '時間（空欄可）', from: '出発地', to: '目的地', detail: '詳細（空欄可）' });
     if (!next) return;
     baseReturnRoute = baseReturnRoute.map(item => item.id === id ? { ...item, ...next } : item);
     saveBaseReturnRoute();
@@ -1473,25 +1521,29 @@
     }
 
     try {
-      customGoRoute = JSON.parse(rawGoRoute || '[]');
+      customGoRoute = JSON.parse(rawGoRoute || '[]').map(normalizeRouteItem);
     } catch (e) {
       customGoRoute = [];
     }
 
     try {
-      customReturnRoute = JSON.parse(rawReturnRoute || '[]');
+      customReturnRoute = JSON.parse(rawReturnRoute || '[]').map(normalizeRouteItem);
     } catch (e) {
       customReturnRoute = [];
     }
     try {
       const parsed = JSON.parse(rawBaseGoRoute || '[]');
-      baseGoRoute = Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_GO_ROUTE.map(item => ({ ...item }));
+      baseGoRoute = Array.isArray(parsed) && parsed.length
+        ? parsed.map(normalizeRouteItem)
+        : DEFAULT_GO_ROUTE.map(item => ({ ...item }));
     } catch (e) {
       baseGoRoute = DEFAULT_GO_ROUTE.map(item => ({ ...item }));
     }
     try {
       const parsed = JSON.parse(rawBaseReturnRoute || '[]');
-      baseReturnRoute = Array.isArray(parsed) && parsed.length ? parsed : DEFAULT_RETURN_ROUTE.map(item => ({ ...item }));
+      baseReturnRoute = Array.isArray(parsed) && parsed.length
+        ? parsed.map(normalizeRouteItem)
+        : DEFAULT_RETURN_ROUTE.map(item => ({ ...item }));
     } catch (e) {
       baseReturnRoute = DEFAULT_RETURN_ROUTE.map(item => ({ ...item }));
     }
@@ -1557,14 +1609,17 @@
   document.getElementById('go-route-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const time = document.getElementById('go-route-time');
-    const title = document.getElementById('go-route-title');
+    const from = document.getElementById('go-route-from');
+    const to = document.getElementById('go-route-to');
     const detail = document.getElementById('go-route-detail');
     const t = time.value.trim();
-    const ti = title.value.trim();
-    if (!t || !ti) return;
-    customGoRoute.unshift({ id: uid('go-route-custom'), time: t, title: ti, detail: detail.value.trim() });
+    const f = from.value.trim();
+    const tt = to.value.trim();
+    if (!t || !f || !tt) return;
+    customGoRoute.unshift({ id: uid('go-route-custom'), time: t, from: f, to: tt, detail: detail.value.trim() });
     time.value = '';
-    title.value = '';
+    from.value = '';
+    to.value = '';
     detail.value = '';
     saveCustomGoRoute();
     renderCustomGoRoute();
@@ -1573,14 +1628,17 @@
   document.getElementById('return-route-form').addEventListener('submit', (e) => {
     e.preventDefault();
     const time = document.getElementById('return-route-time');
-    const title = document.getElementById('return-route-title');
+    const from = document.getElementById('return-route-from');
+    const to = document.getElementById('return-route-to');
     const detail = document.getElementById('return-route-detail');
     const t = time.value.trim();
-    const ti = title.value.trim();
-    if (!t || !ti) return;
-    customReturnRoute.unshift({ id: uid('return-route-custom'), time: t, title: ti, detail: detail.value.trim() });
+    const f = from.value.trim();
+    const tt = to.value.trim();
+    if (!t || !f || !tt) return;
+    customReturnRoute.unshift({ id: uid('return-route-custom'), time: t, from: f, to: tt, detail: detail.value.trim() });
     time.value = '';
-    title.value = '';
+    from.value = '';
+    to.value = '';
     detail.value = '';
     saveCustomReturnRoute();
     renderCustomReturnRoute();
