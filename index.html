@@ -346,6 +346,91 @@
     .res-label { font-size: 12px; color: var(--accent); font-weight: 500; }
     .res-value { font-size: 14px; font-weight: 600; color: var(--label); text-align: right; }
 
+
+
+    /* ─── 追加フォーム / 編集UI ─── */
+    .stack { display: flex; flex-direction: column; gap: 10px; }
+    .inline-form {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 8px;
+      padding: 14px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+    }
+    .inline-form-3 {
+      display: grid;
+      grid-template-columns: 86px 1fr auto;
+      gap: 8px;
+      align-items: center;
+      padding: 14px;
+      background: var(--bg);
+      border-radius: var(--radius-sm);
+    }
+    .input {
+      border: 1px solid var(--sep);
+      background: var(--card);
+      border-radius: 10px;
+      padding: 10px 11px;
+      font-size: 14px;
+      color: var(--label);
+      width: 100%;
+      font: inherit;
+    }
+    .input::placeholder { color: var(--label4); }
+    .input:focus {
+      outline: none;
+      border-color: rgba(212,168,83,0.55);
+      box-shadow: 0 0 0 2px rgba(212,168,83,0.12);
+    }
+    .btn {
+      border: none;
+      background: var(--accent);
+      color: #fff;
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 12px;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+    .btn:active { opacity: 0.7; }
+    .btn-ghost {
+      border: none;
+      background: transparent;
+      color: var(--label3);
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      padding: 6px 8px;
+      border-radius: 8px;
+    }
+    .btn-ghost:active { background: rgba(60,60,67,0.08); }
+    .inline-help {
+      font-size: 12px;
+      color: var(--label4);
+      line-height: 1.5;
+      padding: 0 2px;
+    }
+    .tl-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    @media (max-width: 420px) {
+      .inline-form-3 {
+        grid-template-columns: 1fr 1fr;
+      }
+      .inline-form-3 .btn {
+        grid-column: 1 / -1;
+      }
+      .inline-form-3 #itinerary-detail {
+        grid-column: 1 / -1 !important;
+      }
+    }
+
     /* ─── ボトムタブバー ─── */
     .tabbar {
       position: fixed;
@@ -519,6 +604,22 @@
       </div>
     </div>
 
+
+
+    <div class="section-title">旅程を調整（追加・編集）</div>
+    <div class="card" style="padding: 16px;">
+      <div class="stack">
+        <form class="inline-form-3" id="itinerary-form">
+          <input class="input" type="text" id="itinerary-time" placeholder="時間 例 16:20" maxlength="10" required>
+          <input class="input" type="text" id="itinerary-title" placeholder="予定名を入力" maxlength="60" required>
+          <button class="btn" type="submit">追加</button>
+          <input class="input" style="grid-column: 1 / -1;" type="text" id="itinerary-detail" placeholder="詳細（任意）" maxlength="120">
+        </form>
+        <div class="inline-help">追加した予定はこのセクション内で編集・削除できます（ブラウザ保存）。</div>
+      </div>
+      <div id="custom-itinerary-list" class="timeline" style="margin-top: 10px;"></div>
+    </div>
+
   </div>
 </div>
 
@@ -561,6 +662,18 @@
         <div class="row-right">7:20 → 9:44</div>
       </div>
     </div>
+
+    <div class="section-title">ルート調整（行き）</div>
+    <div class="card" style="padding: 14px; margin-bottom: 10px;">
+      <form class="inline-form-3" id="go-route-form">
+        <input class="input" type="text" id="go-route-time" placeholder="時間" maxlength="20" required>
+        <input class="input" type="text" id="go-route-title" placeholder="経路名（例：最寄り→東京）" maxlength="70" required>
+        <button class="btn" type="submit">追加</button>
+        <input class="input" style="grid-column: 1 / -1;" type="text" id="go-route-detail" placeholder="詳細（任意）" maxlength="120">
+      </form>
+      <div class="inline-help" style="margin-top: 10px;">行きのルートを追加・編集できます。</div>
+    </div>
+    <div class="card" id="custom-go-route-list"></div>
 
     <div class="section-title">新幹線 予約情報</div>
     <div class="card" style="padding: 18px;">
@@ -761,6 +874,18 @@
       </div>
     </div>
 
+    <div class="section-title">ルート調整（帰り）</div>
+    <div class="card" style="padding: 14px; margin-bottom: 10px;">
+      <form class="inline-form-3" id="return-route-form">
+        <input class="input" type="text" id="return-route-time" placeholder="時間" maxlength="20" required>
+        <input class="input" type="text" id="return-route-title" placeholder="経路名（例：東京→最寄り）" maxlength="70" required>
+        <button class="btn" type="submit">追加</button>
+        <input class="input" style="grid-column: 1 / -1;" type="text" id="return-route-detail" placeholder="詳細（任意）" maxlength="120">
+      </form>
+      <div class="inline-help" style="margin-top: 10px;">帰りのルートを追加・編集できます。</div>
+    </div>
+    <div class="card" id="custom-return-route-list"></div>
+
     <div class="section-title">予約状況</div>
     <div class="card" style="padding: 14px 16px;">
       <div class="warn">
@@ -776,6 +901,14 @@
 <div class="tab-content" id="tab-todo">
   <div class="page">
     <div class="section-title">やること</div>
+    <div class="card" style="padding: 14px; margin-bottom: 10px;">
+      <form class="inline-form" id="todo-form">
+        <input class="input" type="text" id="todo-input" placeholder="TODOを追加（例：お土産候補を決める）" maxlength="80" required>
+        <button class="btn" type="submit">追加</button>
+      </form>
+      <div class="inline-help" style="margin-top: 10px;">既存TODOはそのまま、追加分は下に表示されます。保存できない環境ではこの画面内のみ保持されます。</div>
+    </div>
+
     <div class="card checklist">
       <div class="check-item" onclick="toggle(this)" data-id="todo-0">
         <div class="check-circle"><div class="check-circle-inner"></div></div>
@@ -798,6 +931,9 @@
         <div class="check-text">持ち物を準備する</div>
       </div>
     </div>
+
+    <div class="section-title">追加したTODO</div>
+    <div class="card checklist" id="custom-todo-list"></div>
     <div class="caption">チェックはブラウザに保存されます</div>
   </div>
 </div>
@@ -805,6 +941,15 @@
 <!-- ══════════════ 持ち物 ══════════════ -->
 <div class="tab-content" id="tab-packing">
   <div class="page">
+    <div class="section-title">持ち物を追加</div>
+    <div class="card" style="padding: 14px; margin-bottom: 10px;">
+      <form class="inline-form" id="packing-form">
+        <input class="input" type="text" id="packing-input" placeholder="持ち物を追加（例：ハンカチ）" maxlength="80" required>
+        <button class="btn" type="submit">追加</button>
+      </form>
+      <div class="inline-help" style="margin-top: 10px;">追加した持ち物は下のリストでチェック・編集・削除できます。</div>
+    </div>
+
     <div class="section-title">必須</div>
     <div class="card checklist">
       <div class="check-item" onclick="toggle(this)" data-id="pack-0">
@@ -848,6 +993,9 @@
         <div class="check-text">薬（酔い止め・頭痛薬など）</div>
       </div>
     </div>
+
+    <div class="section-title">追加した持ち物</div>
+    <div class="card checklist" id="custom-packing-list"></div>
     <div class="caption">チェックはブラウザに保存されます</div>
   </div>
 </div>
@@ -885,6 +1033,32 @@
 </nav>
 
 <script>
+  const STORAGE_KEYS = {
+    customTodos: 'custom-todos-v1',
+    customItinerary: 'custom-itinerary-v1',
+    customPacking: 'custom-packing-v1',
+    customGoRoute: 'custom-go-route-v1',
+    customReturnRoute: 'custom-return-route-v1'
+  };
+
+  const storage = {
+    get(key) {
+      try {
+        return window.localStorage.getItem(key);
+      } catch (e) {
+        return null;
+      }
+    },
+    set(key, value) {
+      try {
+        window.localStorage.setItem(key, value);
+        return true;
+      } catch (e) {
+        return false;
+      }
+    }
+  };
+
   function showTab(id, btn) {
     document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
     document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
@@ -896,12 +1070,459 @@
   function toggle(el) {
     el.classList.toggle('checked');
     const id = el.dataset.id;
-    localStorage.setItem(id, el.classList.contains('checked') ? '1' : '');
+    storage.set(id, el.classList.contains('checked') ? '1' : '');
   }
 
-  document.querySelectorAll('[data-id]').forEach(el => {
-    if (localStorage.getItem(el.dataset.id) === '1') el.classList.add('checked');
+  let customTodos = [];
+  let customItinerary = [];
+  let customPacking = [];
+  let customGoRoute = [];
+  let customReturnRoute = [];
+
+  function uid(prefix) {
+    return prefix + '-' + Date.now() + '-' + Math.random().toString(16).slice(2, 8);
+  }
+
+  function renderCustomTodos() {
+    const list = document.getElementById('custom-todo-list');
+    list.innerHTML = '';
+    if (!customTodos.length) {
+      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ追加されていません</div></div></div>';
+      return;
+    }
+
+    customTodos.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'check-item' + (item.checked ? ' checked' : '');
+      row.dataset.id = item.id;
+      row.innerHTML = `
+        <div class="check-circle"><div class="check-circle-inner"></div></div>
+        <div class="check-text"></div>
+        <button class="btn-ghost" type="button" data-action="edit">編集</button>
+        <button class="btn-ghost" type="button" data-action="delete">削除</button>
+      `;
+      row.querySelector('.check-text').textContent = item.text;
+      row.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        if (action === 'edit') {
+          e.stopPropagation();
+          editTodo(item.id);
+          return;
+        }
+        if (action === 'delete') {
+          e.stopPropagation();
+          deleteTodo(item.id);
+          return;
+        }
+        toggleCustomTodo(item.id);
+      });
+      list.appendChild(row);
+    });
+  }
+
+  function toggleCustomTodo(id) {
+    customTodos = customTodos.map(item => item.id === id ? { ...item, checked: !item.checked } : item);
+    saveCustomTodos();
+    renderCustomTodos();
+  }
+
+  function editTodo(id) {
+    const todo = customTodos.find(item => item.id === id);
+    if (!todo) return;
+    const next = window.prompt('TODOを編集', todo.text);
+    if (next === null) return;
+    const trimmed = next.trim();
+    if (!trimmed) return;
+    customTodos = customTodos.map(item => item.id === id ? { ...item, text: trimmed } : item);
+    saveCustomTodos();
+    renderCustomTodos();
+  }
+
+  function deleteTodo(id) {
+    customTodos = customTodos.filter(item => item.id !== id);
+    saveCustomTodos();
+    renderCustomTodos();
+  }
+
+  function saveCustomTodos() {
+    storage.set(STORAGE_KEYS.customTodos, JSON.stringify(customTodos));
+  }
+
+  function renderCustomItinerary() {
+    const list = document.getElementById('custom-itinerary-list');
+    list.innerHTML = '';
+    if (!customItinerary.length) {
+      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ追加されていません</div></div></div>';
+      return;
+    }
+
+    customItinerary.forEach(item => {
+      const node = document.createElement('div');
+      node.className = 'tl-item';
+      node.innerHTML = `
+        <div class="tl-left"><div class="tl-time"></div></div>
+        <div class="tl-body">
+          <div class="tl-title"></div>
+          <div class="tl-detail"></div>
+          <div class="tl-actions">
+            <button class="btn-ghost" type="button" data-action="edit">編集</button>
+            <button class="btn-ghost" type="button" data-action="delete">削除</button>
+          </div>
+        </div>
+      `;
+      node.querySelector('.tl-time').textContent = item.time;
+      node.querySelector('.tl-title').textContent = item.title;
+      const detailEl = node.querySelector('.tl-detail');
+      if (item.detail) {
+        detailEl.textContent = item.detail;
+      } else {
+        detailEl.style.display = 'none';
+      }
+      node.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        if (action === 'edit') {
+          editItinerary(item.id);
+        }
+        if (action === 'delete') {
+          deleteItinerary(item.id);
+        }
+      });
+      list.appendChild(node);
+    });
+  }
+
+  function saveCustomItinerary() {
+    storage.set(STORAGE_KEYS.customItinerary, JSON.stringify(customItinerary));
+  }
+
+  function editItinerary(id) {
+    const item = customItinerary.find(v => v.id === id);
+    if (!item) return;
+    const time = window.prompt('時間（例 16:20）', item.time);
+    if (time === null) return;
+    const title = window.prompt('予定名', item.title);
+    if (title === null) return;
+    const detail = window.prompt('詳細（空欄可）', item.detail || '');
+    if (detail === null) return;
+
+    const nextTime = time.trim();
+    const nextTitle = title.trim();
+    if (!nextTime || !nextTitle) return;
+
+    customItinerary = customItinerary.map(v => v.id === id ? {
+      ...v,
+      time: nextTime,
+      title: nextTitle,
+      detail: detail.trim()
+    } : v);
+    saveCustomItinerary();
+    renderCustomItinerary();
+  }
+
+  function deleteItinerary(id) {
+    customItinerary = customItinerary.filter(v => v.id !== id);
+    saveCustomItinerary();
+    renderCustomItinerary();
+  }
+
+
+  function renderCustomPacking() {
+    const list = document.getElementById('custom-packing-list');
+    list.innerHTML = '';
+    if (!customPacking.length) {
+      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ追加されていません</div></div></div>';
+      return;
+    }
+
+    customPacking.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'check-item' + (item.checked ? ' checked' : '');
+      row.dataset.id = item.id;
+      row.innerHTML = `
+        <div class="check-circle"><div class="check-circle-inner"></div></div>
+        <div class="check-text"></div>
+        <button class="btn-ghost" type="button" data-action="edit">編集</button>
+        <button class="btn-ghost" type="button" data-action="delete">削除</button>
+      `;
+      row.querySelector('.check-text').textContent = item.text;
+      row.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        if (action === 'edit') {
+          e.stopPropagation();
+          editPacking(item.id);
+          return;
+        }
+        if (action === 'delete') {
+          e.stopPropagation();
+          deletePacking(item.id);
+          return;
+        }
+        toggleCustomPacking(item.id);
+      });
+      list.appendChild(row);
+    });
+  }
+
+  function saveCustomPacking() {
+    storage.set(STORAGE_KEYS.customPacking, JSON.stringify(customPacking));
+  }
+
+  function toggleCustomPacking(id) {
+    customPacking = customPacking.map(item => item.id === id ? { ...item, checked: !item.checked } : item);
+    saveCustomPacking();
+    renderCustomPacking();
+  }
+
+  function editPacking(id) {
+    const target = customPacking.find(item => item.id === id);
+    if (!target) return;
+    const next = window.prompt('持ち物を編集', target.text);
+    if (next === null) return;
+    const trimmed = next.trim();
+    if (!trimmed) return;
+    customPacking = customPacking.map(item => item.id === id ? { ...item, text: trimmed } : item);
+    saveCustomPacking();
+    renderCustomPacking();
+  }
+
+  function deletePacking(id) {
+    customPacking = customPacking.filter(item => item.id !== id);
+    saveCustomPacking();
+    renderCustomPacking();
+  }
+
+
+  function renderCustomRoute(listId, items, editFn, deleteFn) {
+    const list = document.getElementById(listId);
+    list.innerHTML = '';
+    if (!items.length) {
+      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ追加されていません</div></div></div>';
+      return;
+    }
+
+    items.forEach(item => {
+      const row = document.createElement('div');
+      row.className = 'row';
+      row.innerHTML = `
+        <div class="row-body">
+          <div class="row-title"></div>
+          <div class="row-sub"></div>
+        </div>
+        <div class="row-right"></div>
+        <button class="btn-ghost" type="button" data-action="edit">編集</button>
+        <button class="btn-ghost" type="button" data-action="delete">削除</button>
+      `;
+      row.querySelector('.row-title').textContent = item.title;
+      row.querySelector('.row-right').textContent = item.time;
+      const sub = row.querySelector('.row-sub');
+      if (item.detail) {
+        sub.textContent = item.detail;
+      } else {
+        sub.style.display = 'none';
+      }
+      row.addEventListener('click', (e) => {
+        const action = e.target.dataset.action;
+        if (action === 'edit') {
+          e.stopPropagation();
+          editFn(item.id);
+          return;
+        }
+        if (action === 'delete') {
+          e.stopPropagation();
+          deleteFn(item.id);
+        }
+      });
+      list.appendChild(row);
+    });
+  }
+
+  function saveCustomGoRoute() {
+    storage.set(STORAGE_KEYS.customGoRoute, JSON.stringify(customGoRoute));
+  }
+
+  function saveCustomReturnRoute() {
+    storage.set(STORAGE_KEYS.customReturnRoute, JSON.stringify(customReturnRoute));
+  }
+
+  function renderCustomGoRoute() {
+    renderCustomRoute('custom-go-route-list', customGoRoute, editGoRoute, deleteGoRoute);
+  }
+
+  function renderCustomReturnRoute() {
+    renderCustomRoute('custom-return-route-list', customReturnRoute, editReturnRoute, deleteReturnRoute);
+  }
+
+  function editGoRoute(id) {
+    const target = customGoRoute.find(item => item.id === id);
+    if (!target) return;
+    const time = window.prompt('時間', target.time);
+    if (time === null) return;
+    const title = window.prompt('経路名', target.title);
+    if (title === null) return;
+    const detail = window.prompt('詳細（空欄可）', target.detail || '');
+    if (detail === null) return;
+    if (!time.trim() || !title.trim()) return;
+    customGoRoute = customGoRoute.map(item => item.id === id ? { ...item, time: time.trim(), title: title.trim(), detail: detail.trim() } : item);
+    saveCustomGoRoute();
+    renderCustomGoRoute();
+  }
+
+  function editReturnRoute(id) {
+    const target = customReturnRoute.find(item => item.id === id);
+    if (!target) return;
+    const time = window.prompt('時間', target.time);
+    if (time === null) return;
+    const title = window.prompt('経路名', target.title);
+    if (title === null) return;
+    const detail = window.prompt('詳細（空欄可）', target.detail || '');
+    if (detail === null) return;
+    if (!time.trim() || !title.trim()) return;
+    customReturnRoute = customReturnRoute.map(item => item.id === id ? { ...item, time: time.trim(), title: title.trim(), detail: detail.trim() } : item);
+    saveCustomReturnRoute();
+    renderCustomReturnRoute();
+  }
+
+  function deleteGoRoute(id) {
+    customGoRoute = customGoRoute.filter(item => item.id !== id);
+    saveCustomGoRoute();
+    renderCustomGoRoute();
+  }
+
+  function deleteReturnRoute(id) {
+    customReturnRoute = customReturnRoute.filter(item => item.id !== id);
+    saveCustomReturnRoute();
+    renderCustomReturnRoute();
+  }
+
+  function loadState() {
+    document.querySelectorAll('[data-id]').forEach(el => {
+      if (storage.get(el.dataset.id) === '1') el.classList.add('checked');
+    });
+
+    const rawTodos = storage.get(STORAGE_KEYS.customTodos);
+    const rawItinerary = storage.get(STORAGE_KEYS.customItinerary);
+    const rawPacking = storage.get(STORAGE_KEYS.customPacking);
+    const rawGoRoute = storage.get(STORAGE_KEYS.customGoRoute);
+    const rawReturnRoute = storage.get(STORAGE_KEYS.customReturnRoute);
+
+    try {
+      customTodos = JSON.parse(rawTodos || '[]');
+    } catch (e) {
+      customTodos = [];
+    }
+
+    try {
+      customItinerary = JSON.parse(rawItinerary || '[]');
+    } catch (e) {
+      customItinerary = [];
+    }
+
+    try {
+      customPacking = JSON.parse(rawPacking || '[]');
+    } catch (e) {
+      customPacking = [];
+    }
+
+    try {
+      customGoRoute = JSON.parse(rawGoRoute || '[]');
+    } catch (e) {
+      customGoRoute = [];
+    }
+
+    try {
+      customReturnRoute = JSON.parse(rawReturnRoute || '[]');
+    } catch (e) {
+      customReturnRoute = [];
+    }
+
+    renderCustomTodos();
+    renderCustomItinerary();
+    renderCustomPacking();
+    renderCustomGoRoute();
+    renderCustomReturnRoute();
+  }
+
+  document.getElementById('todo-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('todo-input');
+    const text = input.value.trim();
+    if (!text) return;
+    customTodos.unshift({ id: uid('todo-custom'), text, checked: false });
+    input.value = '';
+    saveCustomTodos();
+    renderCustomTodos();
   });
+
+  document.getElementById('itinerary-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const time = document.getElementById('itinerary-time');
+    const title = document.getElementById('itinerary-title');
+    const detail = document.getElementById('itinerary-detail');
+
+    const t = time.value.trim();
+    const ti = title.value.trim();
+    if (!t || !ti) return;
+
+    customItinerary.push({
+      id: uid('itinerary-custom'),
+      time: t,
+      title: ti,
+      detail: detail.value.trim()
+    });
+
+    time.value = '';
+    title.value = '';
+    detail.value = '';
+    saveCustomItinerary();
+    renderCustomItinerary();
+  });
+
+
+  document.getElementById('packing-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const input = document.getElementById('packing-input');
+    const text = input.value.trim();
+    if (!text) return;
+    customPacking.unshift({ id: uid('packing-custom'), text, checked: false });
+    input.value = '';
+    saveCustomPacking();
+    renderCustomPacking();
+  });
+
+
+  document.getElementById('go-route-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const time = document.getElementById('go-route-time');
+    const title = document.getElementById('go-route-title');
+    const detail = document.getElementById('go-route-detail');
+    const t = time.value.trim();
+    const ti = title.value.trim();
+    if (!t || !ti) return;
+    customGoRoute.unshift({ id: uid('go-route-custom'), time: t, title: ti, detail: detail.value.trim() });
+    time.value = '';
+    title.value = '';
+    detail.value = '';
+    saveCustomGoRoute();
+    renderCustomGoRoute();
+  });
+
+  document.getElementById('return-route-form').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const time = document.getElementById('return-route-time');
+    const title = document.getElementById('return-route-title');
+    const detail = document.getElementById('return-route-detail');
+    const t = time.value.trim();
+    const ti = title.value.trim();
+    if (!t || !ti) return;
+    customReturnRoute.unshift({ id: uid('return-route-custom'), time: t, title: ti, detail: detail.value.trim() });
+    time.value = '';
+    title.value = '';
+    detail.value = '';
+    saveCustomReturnRoute();
+    renderCustomReturnRoute();
+  });
+
+  loadState();
 </script>
 </body>
 </html>
