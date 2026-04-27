@@ -606,17 +606,9 @@
 
 
 
-    <div class="section-title">旅程を調整（追加・編集）</div>
+    <div class="section-title">旅程に反映される調整</div>
     <div class="card" style="padding: 16px;">
-      <div class="stack">
-        <form class="inline-form-3" id="itinerary-form">
-          <input class="input" type="text" id="itinerary-time" placeholder="時間 例 16:20" maxlength="10" required>
-          <input class="input" type="text" id="itinerary-title" placeholder="予定名を入力" maxlength="60" required>
-          <button class="btn" type="submit">追加</button>
-          <input class="input" style="grid-column: 1 / -1;" type="text" id="itinerary-detail" placeholder="詳細（任意）" maxlength="120">
-        </form>
-        <div class="inline-help">追加した予定はこのセクション内で編集・削除できます（ブラウザ保存）。</div>
-      </div>
+      <div class="inline-help">「行き」「帰り」タブで追加・編集した内容がここに反映されます。</div>
       <div id="custom-itinerary-list" class="timeline" style="margin-top: 10px;"></div>
     </div>
 
@@ -1087,7 +1079,7 @@
     const list = document.getElementById('custom-todo-list');
     list.innerHTML = '';
     if (!customTodos.length) {
-      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ追加されていません</div></div></div>';
+      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ調整がありません</div></div></div>';
       return;
     }
 
@@ -1151,12 +1143,25 @@
   function renderCustomItinerary() {
     const list = document.getElementById('custom-itinerary-list');
     list.innerHTML = '';
-    if (!customItinerary.length) {
-      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ追加されていません</div></div></div>';
+
+    const merged = [
+      ...customGoRoute.map(item => ({ ...item, tag: '行き' })),
+      ...customItinerary.map(item => ({ ...item, tag: '旅程' })),
+      ...customReturnRoute.map(item => ({ ...item, tag: '帰り' }))
+    ];
+
+    const withKey = merged.map(item => {
+      const m = (item.time || '').match(/(\d{1,2}):(\d{2})/);
+      const sortKey = m ? (Number(m[1]) * 60 + Number(m[2])) : 9999;
+      return { ...item, sortKey };
+    }).sort((a, b) => a.sortKey - b.sortKey);
+
+    if (!withKey.length) {
+      list.innerHTML = '<div class="row"><div class="row-body"><div class="row-sub">まだ調整がありません</div></div></div>';
       return;
     }
 
-    customItinerary.forEach(item => {
+    withKey.forEach(item => {
       const node = document.createElement('div');
       node.className = 'tl-item';
       node.innerHTML = `
@@ -1164,29 +1169,16 @@
         <div class="tl-body">
           <div class="tl-title"></div>
           <div class="tl-detail"></div>
-          <div class="tl-actions">
-            <button class="btn-ghost" type="button" data-action="edit">編集</button>
-            <button class="btn-ghost" type="button" data-action="delete">削除</button>
-          </div>
         </div>
       `;
       node.querySelector('.tl-time').textContent = item.time;
       node.querySelector('.tl-title').textContent = item.title;
       const detailEl = node.querySelector('.tl-detail');
-      if (item.detail) {
-        detailEl.textContent = item.detail;
-      } else {
-        detailEl.style.display = 'none';
-      }
-      node.addEventListener('click', (e) => {
-        const action = e.target.dataset.action;
-        if (action === 'edit') {
-          editItinerary(item.id);
-        }
-        if (action === 'delete') {
-          deleteItinerary(item.id);
-        }
-      });
+      const parts = [];
+      if (item.detail) parts.push(item.detail);
+      if (item.tag) parts.push('[' + item.tag + 'タブで編集]');
+      detailEl.textContent = parts.join(' ');
+      if (!detailEl.textContent) detailEl.style.display = 'none';
       list.appendChild(node);
     });
   }
@@ -1346,10 +1338,12 @@
 
   function renderCustomGoRoute() {
     renderCustomRoute('custom-go-route-list', customGoRoute, editGoRoute, deleteGoRoute);
+    renderCustomItinerary();
   }
 
   function renderCustomReturnRoute() {
     renderCustomRoute('custom-return-route-list', customReturnRoute, editReturnRoute, deleteReturnRoute);
+    renderCustomItinerary();
   }
 
   function editGoRoute(id) {
@@ -1453,7 +1447,8 @@
     renderCustomTodos();
   });
 
-  document.getElementById('itinerary-form').addEventListener('submit', (e) => {
+  const itineraryForm = document.getElementById('itinerary-form');
+  if (itineraryForm) itineraryForm.addEventListener('submit', (e) => {
     e.preventDefault();
     const time = document.getElementById('itinerary-time');
     const title = document.getElementById('itinerary-title');
